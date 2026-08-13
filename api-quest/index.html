@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>API Quest — Learn APIs by Playing</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">{ }</span>
+      <h1>API Quest</h1>
+      <span class="tag">Learn APIs by Playing</span>
+    </div>
+    <div class="stats">
+      <div class="stat"><span class="stat-label">Level</span><span id="stat-level">1</span></div>
+      <div class="stat"><span class="stat-label">XP</span><span id="stat-xp">0</span></div>
+      <div class="stat"><span class="stat-label">Lives</span><span id="stat-lives">3</span></div>
+      <div class="stat"><span class="stat-label">Streak</span><span id="stat-streak">0</span></div>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="learn">1. Learn</button>
+    <button class="tab" data-tab="quiz">2. Quiz Arena</button>
+    <button class="tab" data-tab="match">3. Status Match</button>
+    <button class="tab" data-tab="console">4. API Console</button>
+    <button class="tab" data-tab="build">5. Endpoint Builder</button>
+    <button class="tab" data-tab="boss">6. Boss Battle</button>
+  </nav>
+
+  <main id="app">
+    <!-- Learn -->
+    <section id="tab-learn" class="panel active">
+      <h2>Welcome, Explorer!</h2>
+      <p class="lead">
+        An <b>API</b> (Application Programming Interface) lets programs talk to each other.
+        When your app asks a server for data, it sends an <b>HTTP request</b>, and the server
+        sends back an <b>HTTP response</b>, usually as <b>JSON</b>.
+      </p>
+
+      <div class="card-grid">
+        <div class="card">
+          <h3>HTTP Methods</h3>
+          <ul>
+            <li><code>GET</code> — read data</li>
+            <li><code>POST</code> — create data</li>
+            <li><code>PUT</code> / <code>PATCH</code> — update data</li>
+            <li><code>DELETE</code> — remove data</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Status Codes</h3>
+          <ul>
+            <li><code>2xx</code> — success (e.g. 200 OK, 201 Created)</li>
+            <li><code>3xx</code> — redirection</li>
+            <li><code>4xx</code> — your fault (400, 401, 404)</li>
+            <li><code>5xx</code> — server's fault (500, 503)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Anatomy of a Request</h3>
+<pre><code>GET /api/users/42 HTTP/1.1
+Host: example.com
+Authorization: Bearer &lt;token&gt;
+Accept: application/json</code></pre>
+        </div>
+        <div class="card">
+          <h3>A JSON Response</h3>
+<pre><code>{
+  "id": 42,
+  "name": "Ada",
+  "role": "admin"
+}</code></pre>
+        </div>
+        <div class="card">
+          <h3>REST Principles</h3>
+          <ul>
+            <li>Resources live at URLs (<code>/users/42</code>)</li>
+            <li>Use the right method for the action</li>
+            <li>Stateless — each request stands alone</li>
+            <li>Use status codes meaningfully</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Auth Basics</h3>
+          <ul>
+            <li><b>API Key</b> — simple shared secret</li>
+            <li><b>Bearer Token</b> — sent in <code>Authorization</code></li>
+            <li><b>OAuth 2.0</b> — delegated access</li>
+            <li>Never hard-code secrets in client code</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cta">
+        <button class="btn primary" onclick="switchTab('quiz')">Start the Quiz &rarr;</button>
+      </div>
+    </section>
+
+    <!-- Quiz -->
+    <section id="tab-quiz" class="panel">
+      <h2>Quiz Arena</h2>
+      <p class="lead">Answer correctly to earn XP. Wrong answers cost a life.</p>
+      <div id="quiz-host" class="quiz-host"></div>
+      <div class="row">
+        <button class="btn" id="quiz-restart">Restart Quiz</button>
+        <button class="btn primary" onclick="switchTab('match')">Next: Status Match &rarr;</button>
+      </div>
+    </section>
+
+    <!-- Status Code Match -->
+    <section id="tab-match" class="panel">
+      <h2>Status Code Match</h2>
+      <p class="lead">Drag each status code onto the situation it best describes.</p>
+      <div class="match-wrap">
+        <div id="match-codes" class="match-codes"></div>
+        <div id="match-slots" class="match-slots"></div>
+      </div>
+      <div class="row">
+        <button class="btn" id="match-reset">Reset</button>
+        <button class="btn primary" id="match-check">Check Answers</button>
+        <button class="btn" onclick="switchTab('console')">Next: API Console &rarr;</button>
+      </div>
+      <p id="match-feedback" class="feedback"></p>
+    </section>
+
+    <!-- Console -->
+    <section id="tab-console" class="panel">
+      <h2>Mock API Console</h2>
+      <p class="lead">
+        Fire requests at our pretend server. Try: <code>GET /users</code>,
+        <code>GET /users/1</code>, <code>POST /users</code> with a JSON body,
+        <code>DELETE /users/2</code>. Earn XP for successful calls.
+      </p>
+      <div class="console">
+        <div class="console-controls">
+          <select id="c-method">
+            <option>GET</option><option>POST</option>
+            <option>PUT</option><option>PATCH</option><option>DELETE</option>
+          </select>
+          <input id="c-path" type="text" value="/users" spellcheck="false"/>
+          <button class="btn primary" id="c-send">Send</button>
+        </div>
+        <div class="console-row">
+          <div>
+            <label>Headers (one per line, <code>Key: Value</code>)</label>
+            <textarea id="c-headers" rows="3" spellcheck="false">Authorization: Bearer demo-token
+Content-Type: application/json</textarea>
+          </div>
+          <div>
+            <label>Body (JSON)</label>
+            <textarea id="c-body" rows="3" spellcheck="false">{"name":"Grace","role":"user"}</textarea>
+          </div>
+        </div>
+        <div class="console-row">
+          <div>
+            <label>Request Preview</label>
+            <pre id="c-preview" class="preview"></pre>
+          </div>
+          <div>
+            <label>Response</label>
+            <pre id="c-response" class="preview"></pre>
+          </div>
+        </div>
+        <div class="hint">
+          <b>Endpoints available:</b>
+          <code>GET /users</code>,
+          <code>GET /users/:id</code>,
+          <code>POST /users</code>,
+          <code>PUT /users/:id</code>,
+          <code>PATCH /users/:id</code>,
+          <code>DELETE /users/:id</code>,
+          <code>GET /courses</code>,
+          <code>GET /me</code> (auth required)
+        </div>
+      </div>
+      <div class="cta">
+        <button class="btn primary" onclick="switchTab('build')">Next: Endpoint Builder &rarr;</button>
+      </div>
+    </section>
+
+    <!-- Endpoint Builder -->
+    <section id="tab-build" class="panel">
+      <h2>Endpoint Builder Challenge</h2>
+      <p class="lead">Read the requirement and build the correct request. Submit to earn XP.</p>
+      <div id="build-host" class="build-host"></div>
+      <div class="cta">
+        <button class="btn primary" onclick="switchTab('boss')">Next: Boss Battle &rarr;</button>
+      </div>
+    </section>
+
+    <!-- Boss -->
+    <section id="tab-boss" class="panel">
+      <h2>Boss Battle: Debug the Client</h2>
+      <p class="lead">
+        The client code is failing. Read the scenario, pick what's actually wrong.
+        Survive 5 rounds to win.
+      </p>
+      <div id="boss-host"></div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+
+  <footer class="footer">
+    <span>Built for learning APIs — group 6 project</span>
+    <button class="linklike" id="reset-all">Reset progress</button>
+  </footer>
+
+  <script src="game.js"></script>
+</body>
+</html>
